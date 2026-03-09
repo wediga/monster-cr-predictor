@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# IDE
+.idea/
+
+# Environment
+.env
+
+# Generated
+trained_model/
+data/
+
+# Planning docs (local only)
+Monster CR Predictor.md
+Umsetzungsplan.md
+
+# Claude
+.claude/
