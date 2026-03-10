@@ -13,10 +13,8 @@ __pycache__/
 # Generated
 trained_model/
 /data/
+.ipynb_checkpoints/
 
 # Planning docs (local only)
 Monster CR Predictor.md
 Umsetzungsplan.md
-
-# Claude
-.claude/
