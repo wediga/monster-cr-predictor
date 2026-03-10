@@ -12,7 +12,7 @@ __pycache__/
 
 # Generated
 trained_model/
-data/
+/data/
 
 # Planning docs (local only)
 Monster CR Predictor.md
