@@ -8,8 +8,6 @@ dependencies = [
     "pandas",
     "fastapi",
     "uvicorn",
-    "jinja2",
-    "requests",
 ]
 
 [project.optional-dependencies]
@@ -17,6 +15,7 @@ dev = [
     "matplotlib",
     "seaborn",
     "jupyter",
+    "requests",
 ]
 
 [build-system]

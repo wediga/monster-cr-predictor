@@ -1182,9 +1182,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "fastapi" },
-    { name = "jinja2" },
     { name = "pandas" },
-    { name = "requests" },
     { name = "scikit-learn" },
     { name = "uvicorn" },
 ]
@@ -1193,17 +1191,17 @@ dependencies = [
 dev = [
     { name = "jupyter" },
     { name = "matplotlib" },
+    { name = "requests" },
     { name = "seaborn" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "fastapi" },
-    { name = "jinja2" },
     { name = "jupyter", marker = "extra == 'dev'" },
     { name = "matplotlib", marker = "extra == 'dev'" },
     { name = "pandas" },
-    { name = "requests" },
+    { name = "requests", marker = "extra == 'dev'" },
     { name = "scikit-learn" },
     { name = "seaborn", marker = "extra == 'dev'" },
     { name = "uvicorn" },
