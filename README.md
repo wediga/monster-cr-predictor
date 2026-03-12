@@ -2,91 +2,115 @@
 
 **Predicting D&D 5e Monster Challenge Ratings with Machine Learning**
 
-[Live Demo](https://cr-predictor.yourdomain.de) | [API Docs](https://cr-predictor.yourdomain.de/docs)
+[Live Demo](https://cr-prediction.wediga.dev) | [API Docs](https://cr-prediction.wediga.dev/docs)
 
 ---
 
 ## Why This Exists
 
-The Challenge Rating (CR) system in Dungeons & Dragons 5th Edition is notoriously inconsistent. A CR 1 creature can be trivial or deadly depending on its stat combination, and the official formula in the Dungeon Master's Guide doesn't capture the complexity of what actually makes a monster dangerous.
+I wanted a portfolio project that's not another TODO app or Titanic dataset. D&D felt like a good fit because the data is freely available, the domain is fun, and the CR system has always bugged me as a player. Some CR 1 monsters are a joke, others will wipe a level 1 party. So: can a model figure out what actually makes a monster dangerous?
 
-As a D&D player and machine learning practitioner, I wanted to answer a straightforward question: **Can a model learn what makes a monster hard, better than the official guidelines?**
-
-This project trains a supervised ML model on 300+ monsters from the D&D 5e SRD to predict Challenge Ratings from stat blocks. Beyond the prediction itself, the feature importance analysis reveals which stats actually drive difficulty - and where the official CR system gets it wrong.
+Turns out, it mostly can. And the answer is surprisingly boring: **Hit Points. That's basically it.**
 
 ## What It Does
 
-- Fetches monster data from the [D&D 5e SRD API](https://www.dnd5eapi.co)
-- Engineers meaningful features from raw stat blocks (damage output, defensive stats, action economy, special abilities)
-- Trains and evaluates multiple models (Linear Regression, Random Forest, Gradient Boosting)
-- Provides a web interface where you can input custom monster stats and get a predicted CR
-- Exposes a REST API for programmatic access
+Takes monster stats from the [D&D 5e SRD API](https://www.dnd5eapi.co) (334 monsters), engineers 14 features from them, and trains three regression models to predict CR. The best model gets saved and served through a FastAPI web app where you can punch in your own monster stats.
+
+## Key Findings
+
+### Model Performance
+
+| Model | MAE | R² |
+|-------|-----|-----|
+| Linear Regression | 0.94 | 0.96 |
+| **Random Forest** | **0.82** | **0.95** |
+| Gradient Boosting | 0.86 | 0.96 |
+
+I went with Random Forest. Not because it has the best R², but because it gives you `feature_importances_` out of the box, which was the whole point for me. I wanted to see *why* a monster gets its CR, not just predict a number.
+
+### Feature Importance
+
+| Feature | Importance |
+|---------|-----------|
+| Hit Points | 85.9% |
+| Constitution | 3.3% |
+| Charisma | 2.4% |
+| Armor Class | 2.2% |
+| Legendary Actions | 2.1% |
+| Intelligence | 1.0% |
+| Actions | 0.6% |
+| Wisdom | 0.5% |
+| Special Abilities | 0.5% |
+| Strength | 0.5% |
+| Dexterity | 0.3% |
+| Immunities | 0.3% |
+| Resistances | 0.2% |
+| Spellcasting | 0.2% |
+
+HP dominates everything at 86%. The EDA already hinted at this (correlation of 0.94 with CR), but seeing it confirmed through the model was still funny. Dexterity, which feels so important when you're actually playing, does essentially nothing for CR. Armor Class barely matters. It's all about how long the monster stays alive, not how hard it is to hit.
 
 ## Try It
 
 ### Web Interface
 
-Visit the [live demo](https://cr-predictor.yourdomain.de) to predict the CR of your homebrew monsters.
+Visit the [live demo](https://cr-prediction.wediga.dev) to predict the CR of your homebrew monsters.
 
 ### API
 
 ```bash
-curl -X POST https://cr-predictor.yourdomain.de/api/predict \
+curl -X POST https://cr-prediction.wediga.dev/api/predict \
   -H "Content-Type: application/json" \
   -d '{
-    "hit_points": 135,
-    "armor_class": 18,
-    "strength": 23,
+    "hit_points": 256,
+    "armor_class": 19,
+    "strength": 27,
     "dexterity": 10,
-    "constitution": 21,
-    "intelligence": 14,
-    "wisdom": 11,
-    "charisma": 13,
+    "constitution": 25,
+    "intelligence": 16,
+    "wisdom": 13,
+    "charisma": 21,
     "num_actions": 3,
-    "num_resistances": 2,
+    "num_resistances": 0,
     "num_immunities": 1,
+    "num_special_abilities": 1,
     "has_spellcasting": false,
-    "has_legendary_actions": false
+    "has_legendary_actions": true
   }'
 ```
 
 ### Run Locally
 
 ```bash
-# Clone and set up
-git clone https://github.com/yourusername/monster-cr-predictor.git
+git clone https://github.com/wediga/monster-cr-predictor.git
 cd monster-cr-predictor
-uv sync
-
-# Fetch data, train model, start server
-uv run python -m cr_predictor.data.fetch
-uv run python -m cr_predictor.train
-uv run fastapi dev src/cr_predictor/api.py
+chmod +x setup.sh
+./setup.sh
 ```
 
-### Docker
+This fetches the data, builds features, trains the model, and starts the app in Docker at `http://localhost:8000`.
+
+### Docker Only
+
+If data and model are already present:
 
 ```bash
-docker compose up
+docker compose up --build
 ```
-
-The app will be available at `http://localhost:8000`.
 
 ## Project Structure
 
 ```
 monster-cr-predictor/
   src/cr_predictor/
-    data/           # Data fetching and processing
+    data/           # Data fetching from D&D 5e API
     features/       # Feature engineering pipeline
-    models/         # Model training and evaluation
+    models/         # Model training and selection
+    static/         # Web UI (HTML/CSS/JS)
     api.py          # FastAPI application
-    templates/      # Web UI (Jinja2)
-    static/         # CSS/JS
-  notebooks/        # EDA and analysis notebooks
-  tests/
+  notebooks/        # EDA and analysis
+  tests/            # API, feature and model tests
   trained_model/    # Serialized model (generated)
-  pyproject.toml
+  setup.sh          # Full pipeline setup script
   Dockerfile
   compose.yaml
 ```
@@ -97,12 +121,7 @@ monster-cr-predictor/
 - **Scikit-learn** for model training
 - **Pandas** for data processing
 - **FastAPI** for the API and web server
-- **Matplotlib / Seaborn** for analysis visualizations
-- **Docker** for deployment
-
-## Key Findings
-
-_This section will be filled after training. Expected content: feature importance ranking, model accuracy (MAE, R2), examples of monsters where the model disagrees with official CR, and what that tells us about the CR system._
+- **Docker** for containerization and deployment
 
 ## Data Source
 
