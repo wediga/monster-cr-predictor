@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monster CR Predictor</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/script.js" defer></script>
+</head>
+<body>
+    <h1>Monster CR Predictor</h1>
+    <p>Enter monster stats to predict its Challenge Rating.</p>
+
+    <form id="predict-form">
+        <fieldset>
+            <legend>Basics</legend>
+            <label>Hit Points <input type="number" name="hit_points" value="50"></label>
+            <label>Armor Class <input type="number" name="armor_class" value="13"></label>
+        </fieldset>
+
+        <fieldset>
+            <legend>Ability Scores</legend>
+            <div class="grid">
+                <label>STR <input type="number" name="strength" value="10"></label>
+                <label>DEX <input type="number" name="dexterity" value="10"></label>
+                <label>CON <input type="number" name="constitution" value="10"></label>
+                <label>INT <input type="number" name="intelligence" value="10"></label>
+                <label>WIS <input type="number" name="wisdom" value="10"></label>
+                <label>CHA <input type="number" name="charisma" value="10"></label>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Abilities</legend>
+            <div class="grid">
+                <label>Actions <input type="number" name="num_actions" value="1"></label>
+                <label>Resistances <input type="number" name="num_resistances" value="0"></label>
+                <label>Immunities <input type="number" name="num_immunities" value="0"></label>
+                <label>Special <input type="number" name="num_special_abilities" value="0"></label>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Special</legend>
+            <label><input type="checkbox" name="has_legendary_actions"> Legendary Actions</label>
+            <label><input type="checkbox" name="has_spellcasting"> Spellcasting</label>
+        </fieldset>
+
+        <div class="button-row">
+            <button type="button" id="randomize">Randomize</button>
+            <button type="submit">Predict CR</button>
+        </div>
+    </form>
+
+    <div id="modal-overlay">
+        <div id="modal">
+            <h2>Predicted Challenge Rating</h2>
+            <span id="cr-value"></span>
+            <button id="modal-close">Close</button>
+        </div>
+    </div>
+</body>
+</html>
