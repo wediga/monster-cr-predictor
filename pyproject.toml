@@ -10,12 +10,14 @@ dependencies = [
     "uvicorn",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "matplotlib",
     "seaborn",
     "jupyter",
     "requests",
+    "pytest",
+    "httpx",
 ]
 
 [build-system]
