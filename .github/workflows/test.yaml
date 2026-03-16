@@ -22,9 +22,6 @@ jobs:
       - name: Install dependencies
         run: uv sync --dev
 
-      - name: Fetch data
-        run: uv run python src/cr_predictor/data/fetch.py
-
       - name: Build features
         run: uv run python src/cr_predictor/features/engineering.py
 

@@ -12,7 +12,10 @@ __pycache__/
 
 # Generated
 trained_model/
-/data/
+/data/*
+!/data/raw/
+/data/raw/*
+!/data/raw/monsters.json
 .ipynb_checkpoints/
 
 # Planning docs (local only)
