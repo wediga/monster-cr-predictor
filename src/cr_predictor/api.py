@@ -1,10 +1,11 @@
 import json
 import joblib
+import numpy
 import pandas as pd
 
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
@@ -16,20 +17,20 @@ with open("trained_model/metadata.json", "r") as f:
 
 
 class MonsterInput(BaseModel):
-    hit_points: int
-    strength: int
-    dexterity: int
-    constitution: int
-    intelligence: int
-    wisdom: int
-    charisma: int
-    armor_class: int
-    num_resistances: int
-    num_immunities: int
-    num_actions: int
+    hit_points: int = Field(ge=0, le=1000)
+    strength: int = Field(ge=1, le=30)
+    dexterity: int = Field(ge=1, le=30)
+    constitution: int = Field(ge=1, le=30)
+    intelligence: int = Field(ge=1, le=30)
+    wisdom: int = Field(ge=1, le=30)
+    charisma: int = Field(ge=1, le=30)
+    armor_class: int = Field(ge=0, le=30)
+    num_resistances: int = Field(ge=0, le=10)
+    num_immunities: int = Field(ge=0, le=10)
+    num_actions: int = Field(ge=0, le=10)
     has_legendary_actions: bool
     has_spellcasting: bool
-    num_special_abilities: int
+    num_special_abilities: int = Field(ge=0, le=10)
 
 
 app.mount("/static", StaticFiles(directory="src/cr_predictor/static"), name="static")
@@ -41,6 +42,7 @@ def index():
 @app.post("/api/predict")
 def predict(monster: MonsterInput):
     monster_dict = monster.model_dump()
+    monster_dict["hit_points"] = numpy.log1p(monster_dict["hit_points"])
 
     monster_dict["has_legendary_actions"] = int(monster_dict["has_legendary_actions"])
     monster_dict["has_spellcasting"] = int(monster_dict["has_spellcasting"])

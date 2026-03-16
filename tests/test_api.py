@@ -58,6 +58,37 @@ def test_predict_rejects_missing_fields():
     assert response.status_code == 422
 
 
+def test_predict_rejects_values_out_of_range():
+    valid_monster = {
+        "hit_points": 50,
+        "strength": 10,
+        "dexterity": 10,
+        "constitution": 10,
+        "intelligence": 10,
+        "wisdom": 10,
+        "charisma": 10,
+        "armor_class": 13,
+        "num_resistances": 0,
+        "num_immunities": 0,
+        "num_actions": 1,
+        "has_legendary_actions": False,
+        "has_spellcasting": False,
+        "num_special_abilities": 0,
+    }
+
+    for field, bad_value in [
+        ("hit_points", 2000),
+        ("hit_points", -1),
+        ("strength", 50),
+        ("strength", 0),
+        ("armor_class", 31),
+        ("num_actions", 11),
+    ]:
+        monster = {**valid_monster, field: bad_value}
+        response = client.post("/api/predict", json=monster)
+        assert response.status_code == 422, f"{field}={bad_value} should be rejected"
+
+
 def test_index_serves_html():
     response = client.get("/")
 

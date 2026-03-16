@@ -50,18 +50,18 @@ function randInt(min, max) {
 document.getElementById("randomize").addEventListener("click", () => {
     const form = document.getElementById("predict-form");
 
-    form.querySelector("[name=hit_points]").value = randInt(1, 676);
-    form.querySelector("[name=armor_class]").value = randInt(5, 25);
+    form.querySelector("[name=hit_points]").value = randInt(1, 1000);
+    form.querySelector("[name=armor_class]").value = randInt(5, 30);
     form.querySelector("[name=strength]").value = randInt(1, 30);
-    form.querySelector("[name=dexterity]").value = randInt(1, 28);
-    form.querySelector("[name=constitution]").value = randInt(8, 30);
-    form.querySelector("[name=intelligence]").value = randInt(1, 25);
-    form.querySelector("[name=wisdom]").value = randInt(3, 25);
+    form.querySelector("[name=dexterity]").value = randInt(1, 30);
+    form.querySelector("[name=constitution]").value = randInt(1, 30);
+    form.querySelector("[name=intelligence]").value = randInt(1, 30);
+    form.querySelector("[name=wisdom]").value = randInt(1, 30);
     form.querySelector("[name=charisma]").value = randInt(1, 30);
-    form.querySelector("[name=num_actions]").value = randInt(0, 7);
-    form.querySelector("[name=num_resistances]").value = randInt(0, 6);
-    form.querySelector("[name=num_immunities]").value = randInt(0, 4);
-    form.querySelector("[name=num_special_abilities]").value = randInt(0, 6);
+    form.querySelector("[name=num_actions]").value = randInt(0, 10);
+    form.querySelector("[name=num_resistances]").value = randInt(0, 10);
+    form.querySelector("[name=num_immunities]").value = randInt(0, 10);
+    form.querySelector("[name=num_special_abilities]").value = randInt(0, 10);
     form.querySelector("[name=has_legendary_actions]").checked = Math.random() < 0.15;
     form.querySelector("[name=has_spellcasting]").checked = Math.random() < 0.2;
 });

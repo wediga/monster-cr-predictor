@@ -1,5 +1,6 @@
 import json
 import os
+import numpy
 
 import pandas as pd
 
@@ -14,7 +15,7 @@ def build_monster():
     for monster in monsters:
         transformed_monster = {
             "index": monster["index"],
-            "hit_points": monster["hit_points"],
+            "hit_points": numpy.log1p(monster["hit_points"]),
             "strength": monster["strength"],
             "dexterity": monster["dexterity"],
             "constitution": monster["constitution"],

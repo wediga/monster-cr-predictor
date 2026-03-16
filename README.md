@@ -22,32 +22,42 @@ Takes monster stats from the [D&D 5e SRD API](https://www.dnd5eapi.co) (334 mons
 
 | Model | MAE | R² |
 |-------|-----|-----|
-| Linear Regression | 0.94 | 0.96 |
-| **Random Forest** | **0.82** | **0.95** |
-| Gradient Boosting | 0.86 | 0.96 |
+| Linear Regression | 1.33 | 0.91 |
+| Random Forest | 0.83 | 0.95 |
+| **Gradient Boosting** | **0.87** | **0.96** |
 
-I went with Random Forest. Not because it has the best R², but because it gives you `feature_importances_` out of the box, which was the whole point for me. I wanted to see *why* a monster gets its CR, not just predict a number.
+Random Forest actually had the best MAE, but I went with Gradient Boosting. [Here's why.](#why-gradient-boosting)
 
 ### Feature Importance
 
 | Feature | Importance |
 |---------|-----------|
-| Hit Points | 85.9% |
-| Constitution | 3.3% |
-| Charisma | 2.4% |
-| Armor Class | 2.2% |
-| Legendary Actions | 2.1% |
-| Intelligence | 1.0% |
+| Hit Points | 84.2% |
+| Constitution | 4.5% |
+| Armor Class | 3.0% |
+| Charisma | 2.5% |
+| Legendary Actions | 2.0% |
+| Intelligence | 1.9% |
 | Actions | 0.6% |
-| Wisdom | 0.5% |
-| Special Abilities | 0.5% |
-| Strength | 0.5% |
-| Dexterity | 0.3% |
+| Wisdom | 0.3% |
 | Immunities | 0.3% |
-| Resistances | 0.2% |
-| Spellcasting | 0.2% |
+| Strength | 0.2% |
+| Dexterity | 0.2% |
+| Spellcasting | 0.1% |
+| Special Abilities | 0.1% |
+| Resistances | 0.05% |
 
-HP dominates everything at 86%. The EDA already hinted at this (correlation of 0.94 with CR), but seeing it confirmed through the model was still funny. Dexterity, which feels so important when you're actually playing, does essentially nothing for CR. Armor Class barely matters. It's all about how long the monster stays alive, not how hard it is to hit.
+HP dominates everything at 84%. The EDA already hinted at this (correlation of 0.94 with CR), but seeing it confirmed through the model was still funny. Dexterity, which feels so important when you're actually playing, does essentially nothing for CR. Armor Class barely matters. It's all about how long the monster stays alive, not how hard it is to hit.
+
+### Why Gradient Boosting
+
+I originally shipped Random Forest. Then I cranked HP to 100,000 on a default stat block and got... CR 15.6. Same prediction as HP 676. Same as HP 1,000. It just flatlines.
+
+Makes sense once you think about it. A Random Forest averages training data in leaf nodes. Extreme inputs all land in the same leaves, so you get the same output no matter how far you go. The model can't predict anything it hasn't seen.
+
+Gradient Boosting isn't magic either, but it builds trees on residuals (the errors of previous trees), so it at least degrades more gracefully at the edges. The MAE is marginally worse (0.87 vs 0.83), but the predictions don't just hit a wall.
+
+Two more things I changed along the way: HP gets a `log1p` transform before training, because the raw distribution is wild (most monsters have 5-100 HP, the Tarrasque sits at 676). And all inputs are capped to D&D-realistic ranges (HP 0-1000, ability scores 1-30, etc.) so you can't feed the model values it has no business predicting.
 
 ## Try It
 

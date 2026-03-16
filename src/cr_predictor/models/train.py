@@ -80,4 +80,6 @@ if __name__ == "__main__":
 
     best_model = evaluate_best_model(result_lr, result_rf, result_gb)
 
-    save_model(best_model, training_data)
+    print(f"best Model: {best_model[0].__class__.__name__}")
+
+    save_model(result_gb, training_data)

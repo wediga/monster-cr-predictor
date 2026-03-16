@@ -14,29 +14,29 @@
     <form id="predict-form">
         <fieldset>
             <legend>Basics</legend>
-            <label>Hit Points <input type="number" name="hit_points" value="50"></label>
-            <label>Armor Class <input type="number" name="armor_class" value="13"></label>
+            <label>Hit Points <input type="number" name="hit_points" value="50" min="0" max="1000"></label>
+            <label>Armor Class <input type="number" name="armor_class" value="13" min="0" max="30"></label>
         </fieldset>
 
         <fieldset>
             <legend>Ability Scores</legend>
             <div class="grid">
-                <label>STR <input type="number" name="strength" value="10"></label>
-                <label>DEX <input type="number" name="dexterity" value="10"></label>
-                <label>CON <input type="number" name="constitution" value="10"></label>
-                <label>INT <input type="number" name="intelligence" value="10"></label>
-                <label>WIS <input type="number" name="wisdom" value="10"></label>
-                <label>CHA <input type="number" name="charisma" value="10"></label>
+                <label>STR <input type="number" name="strength" value="10" min="1" max="30"></label>
+                <label>DEX <input type="number" name="dexterity" value="10" min="1" max="30"></label>
+                <label>CON <input type="number" name="constitution" value="10" min="1" max="30"></label>
+                <label>INT <input type="number" name="intelligence" value="10" min="1" max="30"></label>
+                <label>WIS <input type="number" name="wisdom" value="10" min="1" max="30"></label>
+                <label>CHA <input type="number" name="charisma" value="10" min="1" max="30"></label>
             </div>
         </fieldset>
 
         <fieldset>
             <legend>Abilities</legend>
             <div class="grid">
-                <label>Actions <input type="number" name="num_actions" value="1"></label>
-                <label>Resistances <input type="number" name="num_resistances" value="0"></label>
-                <label>Immunities <input type="number" name="num_immunities" value="0"></label>
-                <label>Special <input type="number" name="num_special_abilities" value="0"></label>
+                <label>Actions <input type="number" name="num_actions" value="1" min="0" max="10"></label>
+                <label>Resistances <input type="number" name="num_resistances" value="0" min="0" max="10"></label>
+                <label>Immunities <input type="number" name="num_immunities" value="0" min="0" max="10"></label>
+                <label>Special <input type="number" name="num_special_abilities" value="0" min="0" max="10"></label>
             </div>
         </fieldset>
 
