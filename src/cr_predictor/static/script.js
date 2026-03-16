@@ -104,7 +104,7 @@ document.getElementById("predict-form").addEventListener("submit", async (e) => 
         charisma: Number(formData.get("charisma")),
         num_actions: Number(formData.get("num_actions")),
         num_resistances: Number(formData.get("num_resistances")),
-        num_immunities: Number(formData.get("num_special_abilities")),
+        num_immunities: Number(formData.get("num_immunities")),
         num_special_abilities: Number(formData.get("num_special_abilities")),
         has_legendary_actions: form.querySelector("[name=has_legendary_actions]").checked,
         has_spellcasting: form.querySelector("[name=has_spellcasting]").checked,
