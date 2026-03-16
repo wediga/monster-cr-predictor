@@ -17,7 +17,7 @@ with open("trained_model/metadata.json", "r") as f:
 
 
 class MonsterInput(BaseModel):
-    hit_points: int = Field(ge=0, le=1000)
+    hit_points: int = Field(ge=1, le=1000)
     strength: int = Field(ge=1, le=30)
     dexterity: int = Field(ge=1, le=30)
     constitution: int = Field(ge=1, le=30)

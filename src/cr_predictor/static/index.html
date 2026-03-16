@@ -4,21 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monster CR Predictor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
     <script src="/static/script.js" defer></script>
 </head>
 <body>
-    <h1>Monster CR Predictor</h1>
-    <p>Enter monster stats to predict its Challenge Rating.</p>
+    <div class="noise-overlay"></div>
 
-    <form id="predict-form">
-        <fieldset>
+    <header class="animate-fade-up delay-1">
+        <div class="title-row">
+            <svg class="d20-icon" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polygon points="50,2 97,36 79,93 21,93 3,36"/>
+                <line x1="50" y1="2" x2="21" y2="93"/>
+                <line x1="50" y1="2" x2="79" y2="93"/>
+                <line x1="97" y1="36" x2="21" y2="93"/>
+                <line x1="3" y1="36" x2="79" y2="93"/>
+                <line x1="3" y1="36" x2="97" y2="36"/>
+                <text x="50" y="58" text-anchor="middle" fill="currentColor" stroke="none" font-size="20" font-family="Cinzel" font-weight="600">20</text>
+            </svg>
+            <h1>Monster CR Predictor</h1>
+        </div>
+        <p>Enter monster stats to predict its Challenge Rating.</p>
+        <div class="glow-line"></div>
+    </header>
+
+    <form id="predict-form" novalidate>
+        <fieldset class="animate-fade-up delay-2">
             <legend>Basics</legend>
-            <label>Hit Points <input type="number" name="hit_points" value="50" min="0" max="1000"></label>
+            <label>Hit Points <input type="number" name="hit_points" value="50" min="1" max="1000"></label>
             <label>Armor Class <input type="number" name="armor_class" value="13" min="0" max="30"></label>
         </fieldset>
 
-        <fieldset>
+        <fieldset class="animate-fade-up delay-3">
             <legend>Ability Scores</legend>
             <div class="grid">
                 <label>STR <input type="number" name="strength" value="10" min="1" max="30"></label>
@@ -30,7 +49,7 @@
             </div>
         </fieldset>
 
-        <fieldset>
+        <fieldset class="animate-fade-up delay-4">
             <legend>Abilities</legend>
             <div class="grid">
                 <label>Actions <input type="number" name="num_actions" value="1" min="0" max="10"></label>
@@ -40,13 +59,13 @@
             </div>
         </fieldset>
 
-        <fieldset>
+        <fieldset class="animate-fade-up delay-5">
             <legend>Special</legend>
             <label><input type="checkbox" name="has_legendary_actions"> Legendary Actions</label>
             <label><input type="checkbox" name="has_spellcasting"> Spellcasting</label>
         </fieldset>
 
-        <div class="button-row">
+        <div class="button-row animate-fade-up delay-6">
             <button type="button" id="randomize">Randomize</button>
             <button type="submit">Predict CR</button>
         </div>

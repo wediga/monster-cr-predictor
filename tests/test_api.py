@@ -78,6 +78,7 @@ def test_predict_rejects_values_out_of_range():
 
     for field, bad_value in [
         ("hit_points", 2000),
+        ("hit_points", 0),
         ("hit_points", -1),
         ("strength", 50),
         ("strength", 0),
