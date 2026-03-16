@@ -58,7 +58,7 @@ header {
 }
 
 .d20-icon:hover {
-    transform: rotate(60deg);
+    transform: rotate(360deg);
     color: #b388ff;
 }
 
