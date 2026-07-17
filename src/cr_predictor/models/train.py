@@ -82,4 +82,4 @@ if __name__ == "__main__":
 
     print(f"best Model: {best_model[0].__class__.__name__}")
 
-    save_model(result_gb, training_data)
+    save_model(best_model, training_data)
