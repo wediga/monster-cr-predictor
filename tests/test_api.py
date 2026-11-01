@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 
 from cr_predictor.api import app
@@ -95,3 +96,18 @@ def test_index_serves_html():
 
     assert response.status_code == 200
     assert "text/html" in response.headers["content-type"]
+
+
+def test_index_loads_nothing_from_other_servers():
+    html = client.get("/").text
+
+    assert 'href="http' not in html
+    assert 'src="http' not in html
+
+
+@pytest.mark.parametrize("font", ["cinzel", "outfit"])
+def test_fonts_are_served_locally(font):
+    response = client.get(f"/static/fonts/{font}.woff2")
+
+    assert response.status_code == 200
+    assert response.content[:4] == b"wOF2"

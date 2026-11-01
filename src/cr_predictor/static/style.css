@@ -1,3 +1,24 @@
+/* ── Fonts ──
+   Served from this app so no visitor request goes to another server.
+   Variable fonts (latin subset) from Fontsource 5.3.0, SIL Open Font License,
+   see the *-OFL.txt files next to them. */
+
+@font-face {
+    font-family: 'Cinzel';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 400 900;
+    src: url('/static/fonts/cinzel.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Outfit';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 900;
+    src: url('/static/fonts/outfit.woff2') format('woff2');
+}
+
 * {
     margin: 0;
     padding: 0;
