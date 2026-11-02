@@ -59,6 +59,16 @@ Gradient Boosting isn't magic either, but it builds trees on residuals (the erro
 
 Two more things I changed along the way: HP gets a `log1p` transform before training, because the raw distribution is wild (most monsters have 5-100 HP, the Tarrasque sits at 676). And all inputs are capped to D&D-realistic ranges (HP 0-1000, ability scores 1-30, etc.) so you can't feed the model values it has no business predicting.
 
+## What I Learned
+
+Most of the time went into the data, not the model. Turning the raw SRD JSON into 14 usable features took longer than training all three models, and the preprocessing has to happen the same way in training and in the API, otherwise the predictions are quietly wrong.
+
+The Random Forest flatline showed me that a good MAE says nothing about how a model behaves outside its training data. I only found it because I tried a silly input by hand.
+
+Getting it live meant Docker, a reverse proxy and HTTPS on my own server, so the project ended up being as much about deployment as about machine learning.
+
+And the D&D lesson: Hit Points decide almost everything.
+
 ## Try It
 
 ### Web Interface
