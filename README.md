@@ -130,7 +130,7 @@ monster-cr-predictor/
   notebooks/        # EDA and analysis
   tests/            # API, feature and model tests
   trained_model/    # Serialized model (generated)
-  deploy/           # Quadlet unit and how it runs on the server
+  deploy/           # Quadlet unit, deploy script and how it runs on the server
   setup.sh          # Full pipeline setup script
   Dockerfile
   compose.yaml

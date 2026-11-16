@@ -2,9 +2,9 @@
 Description=Monster CR Predictor (FastAPI)
 
 [Container]
-# Built on the server from the checkout, see deploy/README.md, so nothing is
-# ever fetched from a registry here.
-Image=localhost/cr-predictor:latest
+# deploy/deploy.sh pulls the image of a commit and tags it with this name, so
+# a restart after a reboot uses the last deploy and fetches nothing.
+Image=localhost/cr-predictor:deployed
 Pull=never
 ContainerName=cr-predictor
 # The network of wediga.dev, where Caddy reaches the app by name until it
