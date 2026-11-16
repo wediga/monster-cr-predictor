@@ -1,0 +1,26 @@
+[Unit]
+Description=Monster CR Predictor (FastAPI)
+
+[Container]
+# Built on the server from the checkout, see deploy/README.md, so nothing is
+# ever fetched from a registry here.
+Image=localhost/cr-predictor:latest
+Pull=never
+ContainerName=cr-predictor
+# The network of wediga.dev, where Caddy reaches the app by name until it
+# moves to the repository NuviraLabs/polaris.
+Network=wediga.network
+# The port polaris assigns, so its Caddy reaches the app. Only on loopback,
+# the app is never reachable from outside except through Caddy.
+PublishPort=127.0.0.1:8103:8000
+# The image runs as a non-root user and the app never writes, so the root
+# filesystem stays read-only.
+NoNewPrivileges=true
+DropCapability=ALL
+ReadOnly=true
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
