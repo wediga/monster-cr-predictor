@@ -1,0 +1,122 @@
+name: CI
+
+# Least-privilege token: only the image job may write, and only to GHCR.
+permissions:
+  contents: read
+
+# Every job runs on every change, so none is ever skipped. The image job
+# builds the image and lets Trivy decide whether it may ship. On a pull
+# request nothing is pushed, on a push to main the image goes to GHCR.
+#
+# Every action and image is pinned to an immutable commit or digest rather
+# than a tag, because tags can be moved to malicious code.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  IMAGE: ghcr.io/wediga/monster-cr-predictor
+
+jobs:
+  basics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The whole history, so the secret scan sees every commit.
+          fetch-depth: 0
+
+      - name: Lint the workflows
+        run: docker run --rm -v "$PWD:/repo" --workdir /repo docker.io/rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667 -color
+
+      - name: Scan for secrets
+        run: docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f git /repo --redact --verbose
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # The same Python as the image.
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --frozen --dev
+
+      - name: Build features
+        run: uv run python src/cr_predictor/features/engineering.py
+
+      - name: Train model
+        run: uv run python src/cr_predictor/models/train.py
+
+      - name: Run tests
+        run: uv run pytest tests/ -v
+
+  image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      SHA: ${{ github.sha }}
+      # Older versions are deleted after every push, a deploy only needs the
+      # newest one.
+      KEEP_VERSIONS: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # The label links the package to this repository, so the jobs of the
+      # repository may push, pull and delete it.
+      - name: Build image
+        run: docker build --label "org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}" -t "$IMAGE:$SHA" .
+
+      # Fails only on HIGH or CRITICAL findings that have a fix. The image is
+      # handed over as a file, so Trivy needs no access to the Docker socket.
+      - name: Scan image
+        run: |
+          docker save -o image.tar "$IMAGE:$SHA"
+          docker run --rm -v "$PWD/image.tar:/image.tar:ro" docker.io/aquasec/trivy:0.76.1@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c image --quiet --input /image.tar --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
+
+      - name: Push image
+        if: github.event_name == 'push'
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "${{ github.actor }}" --password-stdin
+          docker push "$IMAGE:$SHA"
+
+      - name: Delete older images
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSIONS: users/${{ github.repository_owner }}/packages/container/monster-cr-predictor/versions
+        # A single page holds them all, because each push leaves only one.
+        run: |
+          gh api "$VERSIONS?per_page=100" --jq 'sort_by(.created_at) | reverse | .[].id' | tail -n "+$((KEEP_VERSIONS + 1))" | while read -r id; do
+            gh api --method DELETE "$VERSIONS/$id"
+          done
+
+  # A single stable check for the ruleset. It fails if any job failed or was
+  # cancelled.
+  ci-success:
+    needs: [basics, test, image]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify no CI job failed
+        run: |
+          for r in "${{ needs.basics.result }}" "${{ needs.test.result }}" "${{ needs.image.result }}"; do
+            if [ "$r" != "success" ]; then
+              echo "a CI job did not pass: $r"
+
+              exit 1
+            fi
+          done
+
+          echo "all CI jobs passed"
