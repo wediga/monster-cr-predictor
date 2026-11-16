@@ -1,0 +1,7 @@
+# The image copies src/ as a whole, so local bytecode must not come along,
+# and the image builds its own virtualenv and model.
+.venv/
+__pycache__/
+*.py[cod]
+.git/
+trained_model/
