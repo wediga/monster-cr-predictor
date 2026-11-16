@@ -1,13 +1,9 @@
+# Runs the app locally at http://localhost:8000. The server uses the Quadlet
+# unit in deploy/quadlet instead.
 services:
   app:
     build: .
     container_name: cr-predictor
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     restart: unless-stopped
-    networks:
-      - proxy
-
-networks:
-  proxy:
-    external: true
