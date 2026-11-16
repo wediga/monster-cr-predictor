@@ -35,6 +35,9 @@ jobs:
       - name: Scan for secrets
         run: docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f git /repo --redact --verbose
 
+      - name: Lint the deploy script
+        run: docker run --rm -v "$PWD:/repo" --workdir /repo docker.io/koalaman/shellcheck:v0.11.0@sha256:61862eba1fcf09a484ebcc6feea46f1782532571a34ed51fedf90dd25f925a8d deploy/deploy.sh
+
   test:
     runs-on: ubuntu-latest
     steps:
@@ -120,3 +123,37 @@ jobs:
           done
 
           echo "all CI jobs passed"
+
+  # Deploys only once every check of the commit has passed, so a red test on
+  # main never reaches the server. No job is ever skipped, so the implicit
+  # success() of this condition holds whenever ci-success passed.
+  deploy:
+    needs: ci-success
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    # Only runs of main may use the secrets of this environment.
+    environment: production
+    permissions:
+      contents: read
+      packages: read
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # deploy/deploy.sh describes what the server receives and does.
+      - name: Deploy over SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          DEPLOY_TARGET: ${{ vars.DEPLOY_TARGET }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SHA: ${{ github.sha }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/deploy_key
+          { printf '%s\n' "$GHCR_TOKEN"; tar -c -C deploy quadlet deploy.sh; } \
+            | ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -i ~/.ssh/deploy_key "$DEPLOY_TARGET" "$SHA"
