@@ -1,4 +1,4 @@
-"""The unit publishes the app only on loopback and runs it on a read-only filesystem."""
+"""The unit publishes the app only on loopback, in a network of its own, on a read-only filesystem."""
 
 from pathlib import Path
 
@@ -16,6 +16,12 @@ def test_app_is_published_only_on_loopback() -> None:
     published = [line for line in unit_lines() if line.startswith("PublishPort=")]
 
     assert published == [PUBLISHED_PORT]
+
+
+def test_app_joins_no_network_of_another_app() -> None:
+    networks = [line for line in unit_lines() if line.startswith("Network=")]
+
+    assert networks == []
 
 
 def test_root_filesystem_is_read_only() -> None:

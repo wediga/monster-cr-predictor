@@ -7,9 +7,6 @@ Description=Monster CR Predictor (FastAPI)
 Image=localhost/cr-predictor:deployed
 Pull=never
 ContainerName=cr-predictor
-# The network of wediga.dev, where Caddy reaches the app by name until it
-# moves to the repository NuviraLabs/polaris.
-Network=wediga.network
 # The port polaris assigns, so its Caddy reaches the app. Only on loopback,
 # the app is never reachable from outside except through Caddy.
 PublishPort=127.0.0.1:8103:8000
