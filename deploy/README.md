@@ -1,6 +1,6 @@
 # Running it on the server
 
-The app runs on ax41 as a rootless Podman container under the user `web`, started by systemd through the Quadlet unit in `quadlet/`. Caddy reaches it over the network of wediga.dev and, once Caddy has moved to the repository `NuviraLabs/polaris`, over port 8103 on `127.0.0.1`.
+The app runs on ax41 as a rootless Podman container under the user `web`, started by systemd through the Quadlet unit in `quadlet/`. Caddy runs from the repository `NuviraLabs/polaris` under a user of its own and reaches the app only through port 8103 on `127.0.0.1`.
 
 The commands in this file run as `web`. After `ssh ax41` and `sudo -iu web`, run `export XDG_RUNTIME_DIR=/run/user/$(id -u)` once, because `sudo` does not set it and `systemctl --user` cannot reach the user's systemd without it.
 
